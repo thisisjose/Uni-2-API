@@ -15,7 +15,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/uni2_db')
   .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
 // Rutas
-app.use('/api/campaigns', require('./routes/campaigns'));
+app.use('/api/events', require('./routes/events'));
 
 // Ruta de prueba
 app.get('/', (req, res) => {

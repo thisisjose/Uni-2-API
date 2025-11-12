@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const campaignSchema = new mongoose.Schema({
+const eventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true
@@ -9,29 +9,13 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  organizer: {
-    type: String,
-    required: true
-  },
-  startDate: {
-    type: Date,
-    required: true
-  },
-  endDate: {
+  date: {
     type: Date,
     required: true
   },
   location: {
     type: String,
     required: true
-  },
-  targetGoal: {
-    type: Number,
-    required: true
-  },
-  currentProgress: {
-    type: Number,
-    default: 0
   },
   participants: [{
     userId: String,
@@ -45,14 +29,9 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     enum: ['active', 'completed', 'cancelled'],
     default: 'active'
-  },
-  category: {
-    type: String,
-    enum: ['food', 'clothes', 'books', 'toys', 'medical', 'other'],
-    required: true
   }
 }, {
   timestamps: true
 });
 
-module.exports = mongoose.model('Campaign', campaignSchema);
+module.exports = mongoose.model('Event', eventSchema);
