@@ -11,15 +11,15 @@ app.use(express.json());
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/uni2_db')
-  .then(() => console.log('✅ Conectado a MongoDB'))
-  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch(err => console.error('error conectando a MongoDB:', err));
 
 // Rutas
 app.use('/api/events', require('./routes/events'));
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.json({ message: '🚀 API Uni-2 funcionando!' });
+  res.json({ message: 'API Uni-2 funcionando!' });
 });
 
 module.exports = app;

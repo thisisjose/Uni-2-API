@@ -1,7 +1,19 @@
 const Event = require('../models/Event');
+const mockEvents = require ('../data/mockEvents');
 
 // GET - Obtener todos los eventos
 const getAllEvents = async (req, res) => {
+
+  const useMockData = true;
+
+  if(useMockData){
+    return res.json({
+      success: true,
+      count: mockEvents.length,
+      data: mockEvents
+    })
+  }
+
   try {
     const events = await Event.find();
     res.json({
