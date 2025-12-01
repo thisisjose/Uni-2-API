@@ -1,9 +1,9 @@
 const Event = require('../models/Event');
 
-// GET - Obtener todos los eventos
+// GET - Todos los eventos
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await Event.find().populate('createdBy', 'name email');
     res.json({
       success: true,
       count: events.length,
@@ -18,20 +18,20 @@ const getAllEvents = async (req, res) => {
   }
 };
 
-// GET - Obtener evento por ID
+// GET - Evento por ID
 const getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id)
+      .populate('createdBy', 'name email')
+      .populate('participants.userId', 'name');
+    
     if (!event) {
       return res.status(404).json({
         success: false,
         message: 'Evento no encontrado'
       });
     }
-    res.json({
-      success: true,
-      data: event
-    });
+    res.json({ success: true, data: event });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -41,11 +41,18 @@ const getEventById = async (req, res) => {
   }
 };
 
-// POST - Crear nuevo evento
+// POST - Crear evento (SOLO ADMIN)
 const createEvent = async (req, res) => {
   try {
-    const event = new Event(req.body);
+    const eventData = {
+      ...req.body,
+      createdBy: req.user._id
+    };
+    
+    const event = new Event(eventData);
     const savedEvent = await event.save();
+    const populatedEvent = await Event.findById(savedEvent._id)
+      .populate('createdBy', 'name email');
     
     res.status(201).json({
       success: true,
@@ -61,14 +68,14 @@ const createEvent = async (req, res) => {
   }
 };
 
-// PUT - Actualizar evento
+// PUT - Actualizar evento (SOLO ADMIN)
 const updateEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    );
+    ).populate('createdBy', 'name email');
     
     if (!event) {
       return res.status(404).json({
@@ -91,7 +98,7 @@ const updateEvent = async (req, res) => {
   }
 };
 
-// DELETE - Eliminar evento
+// DELETE - Eliminar evento (SOLO ADMIN)
 const deleteEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
@@ -119,21 +126,19 @@ const deleteEvent = async (req, res) => {
 // POST - Unirse a evento (MÓDULO OPERATIVO)
 const joinEvent = async (req, res) => {
   try {
-    const { userId, userName } = req.body;
-    
     const event = await Event.findByIdAndUpdate(
       req.params.id,
       {
-        $push: {
+        $addToSet: {  // Evitar duplicados
           participants: {
-            userId,
-            userName,
-            joinedAt: new Date()
+            userId: req.user._id,
+            userName: req.user.name
           }
-        }
+        },
+        $inc: { currentProgress: 1 }
       },
       { new: true }
-    );
+    ).populate('participants.userId', 'name');
     
     if (!event) {
       return res.status(404).json({

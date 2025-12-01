@@ -9,14 +9,18 @@ const {
   joinEvent
 } = require('../controllers/eventsController');
 
-// CRUD Completo para Eventos
-router.get('/', getAllEvents);           // GET todos los eventos
-router.get('/:id', getEventById);        // GET evento por ID
-router.post('/', createEvent);           // POST crear evento
-router.put('/:id', updateEvent);         // PUT actualizar evento
-router.delete('/:id', deleteEvent);      // DELETE eliminar evento
+const { authenticate, authorizeAdmin } = require('../middleware/auth');
 
-// MÓDULO OPERATIVO - Unirse a evento
-router.post('/:id/join', joinEvent);     // POST unirse a evento
+// Públicas
+router.get('/', getAllEvents);
+router.get('/:id', getEventById);
+
+// Protegidas - Solo admin
+router.post('/', authenticate, authorizeAdmin, createEvent);
+router.put('/:id', authenticate, authorizeAdmin, updateEvent);
+router.delete('/:id', authenticate, authorizeAdmin, deleteEvent);
+
+// Módulo operativo - Cualquier usuario autenticado
+router.post('/:id/join', authenticate, joinEvent);
 
 module.exports = router;
