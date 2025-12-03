@@ -126,19 +126,7 @@ const deleteEvent = async (req, res) => {
 // POST - Unirse a evento (MÓDULO OPERATIVO)
 const joinEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
-      {
-        $addToSet: {  // Evitar duplicados
-          participants: {
-            userId: req.user._id,
-            userName: req.user.name
-          }
-        },
-        $inc: { currentProgress: 1 }
-      },
-      { new: true }
-    ).populate('participants.userId', 'name');
+    const event = await Event.findById(req.params.id);
     
     if (!event) {
       return res.status(404).json({
@@ -146,11 +134,36 @@ const joinEvent = async (req, res) => {
         message: 'Evento no encontrado'
       });
     }
-    
+
+    // VERIFICAR SI EL USUARIO YA ESTÁ PARTICIPANDO
+    const alreadyParticipating = event.participants.some(
+      participant => participant.userId.toString() === req.user._id.toString()
+    );
+
+    if (alreadyParticipating) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ya estás participando en este evento'
+      });
+    }
+
+    // AGREGAR AL USUARIO
+    event.participants.push({
+      userId: req.user._id,
+      userName: req.user.name
+    });
+
+    event.currentProgress += 1;
+
+    await event.save();
+
+    const populatedEvent = await Event.findById(event._id)
+      .populate('participants.userId', 'name');
+
     res.json({
       success: true,
       message: 'Te has unido exitosamente al evento',
-      data: event
+      data: populatedEvent
     });
   } catch (error) {
     res.status(400).json({
