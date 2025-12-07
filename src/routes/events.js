@@ -6,7 +6,8 @@ const {
   createEvent,
   updateEvent,
   deleteEvent,
-  joinEvent
+  joinEvent,
+  leaveEvent
 } = require('../controllers/eventsController');
 
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
