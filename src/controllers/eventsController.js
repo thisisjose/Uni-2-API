@@ -174,11 +174,60 @@ const joinEvent = async (req, res) => {
   }
 };
 
+// POST - Salirse de evento
+const leaveEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Evento no encontrado'
+      });
+    }
+
+    // Verificar si el usuario está participando
+    const participantIndex = event.participants.findIndex(
+      participant => participant.userId.toString() === req.user._id.toString()
+    );
+
+    if (participantIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        message: 'No estás participando en este evento'
+      });
+    }
+
+    // Remover al usuario
+    event.participants.splice(participantIndex, 1);
+    event.currentProgress = Math.max(0, event.currentProgress - 1);
+
+    await event.save();
+
+    const populatedEvent = await Event.findById(event._id)
+      .populate('participants.userId', 'name');
+
+    res.json({
+      success: true,
+      message: 'Te has salido del evento exitosamente',
+      data: populatedEvent
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'Error saliéndose del evento',
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   getAllEvents,
   getEventById,
   createEvent,
   updateEvent,
   deleteEvent,
-  joinEvent
+  joinEvent,
+  leaveEvent
 };

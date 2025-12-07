@@ -22,5 +22,6 @@ router.delete('/:id', authenticate, authorizeAdmin, deleteEvent);
 
 // Módulo operativo - Cualquier usuario autenticado
 router.post('/:id/join', authenticate, joinEvent);
+router.post('/:id/leave', authenticate, leaveEvent);
 
 module.exports = router;
