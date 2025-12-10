@@ -40,11 +40,17 @@ const eventSchema = new mongoose.Schema({
       ref: 'User',
       required: true
     },
-    // userName NO va aquí porque viene del User referenciado
-    joinedAt: {
-      type: Date,
-      default: Date.now
-    }
+      name: {
+        type: String
+      },
+      joinedAt: {
+        type: Date,
+        default: Date.now
+      },
+      attended: {
+        type: Boolean,
+        default: null
+      }
   }],
   status: {
     type: String,

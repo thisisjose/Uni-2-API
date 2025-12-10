@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { generateToken } = require('../middleware/auth');
 
-// Registro de usuario
+// Registro dea usuario
 const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -101,6 +101,10 @@ const login = async (req, res) => {
 // Obtener perfil del usuario actual
 const getProfile = async (req, res) => {
   try {
+    // Contador de asistencias (eventos donde fue marcado como attended = true)
+    const Event = require('../models/Event');
+    const attendedCount = await Event.countDocuments({ 'participants': { $elemMatch: { userId: req.user._id, attended: true } } });
+
     res.json({
       success: true,
       data: {
@@ -109,7 +113,8 @@ const getProfile = async (req, res) => {
           name: req.user.name,
           email: req.user.email,
           role: req.user.role,
-          createdAt: req.user.createdAt
+          createdAt: req.user.createdAt,
+          attendedCount
         }
       }
     });
