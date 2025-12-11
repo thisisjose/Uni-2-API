@@ -295,5 +295,7 @@ module.exports = {
   updateEvent,
   deleteEvent,
   joinEvent,
-  leaveEvent
+  leaveEvent,
+  getMyEvents,
+  markAttendance
 };
