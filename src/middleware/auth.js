@@ -83,9 +83,20 @@ const authorizeOrganizer = (req, res, next) => {
   next();
 };
 
+// Middleware para permitir admin o organizer
+const requireOrganizerOrAdmin = (req, res, next) => {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'organizer')) {
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Se requiere rol de organizador o administrador.'
+    });
+  }
+  next();
+};
+
 // Generar token JWT
 const generateToken = (userId) => {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
 };
 
-module.exports = { authenticate, optionalAuthenticate, authorizeAdmin, authorizeOrganizer, generateToken };
+module.exports = { authenticate, optionalAuthenticate, authorizeAdmin, authorizeOrganizer, requireOrganizerOrAdmin, generateToken };

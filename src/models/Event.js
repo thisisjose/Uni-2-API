@@ -17,47 +17,43 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  organizer: {  // AGREGAR ESTE CAMPO
-    type: String,
-    required: true
-  },
-  targetGoal: {  // AGREGAR ESTE CAMPO (opcional)
+  targetGoal: {
     type: Number,
     default: 0
   },
-  currentProgress: {  // AGREGAR ESTE CAMPO
+  currentProgress: {
     type: Number,
     default: 0
   },
-  category: {  // AGREGAR ESTE CAMPO
+  category: {
     type: String,
     enum: ['food', 'clothes', 'books', 'toys', 'medical', 'other'],
     default: 'other'
   },
-    participants: [{
+  participants: [{
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
-      name: {
-        type: String
-      },
-      joinedAt: {
-        type: Date,
-        default: Date.now
-      },
-      attended: {
-        type: Boolean,
-        default: null
-      }
+    name: {
+      type: String
+    },
+    joinedAt: {
+      type: Date,
+      default: Date.now
+    },
+    attended: {
+      type: Boolean,
+      default: null
+    }
   }],
   status: {
     type: String,
     enum: ['active', 'completed', 'cancelled'],
     default: 'active'
   },
-  createdBy: {  // AGREGAR - RELACIÓN CON USUARIO
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true

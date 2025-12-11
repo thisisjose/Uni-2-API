@@ -21,14 +21,6 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'organizer', 'admin'],
     default: 'user'
   },
-  active: {
-    type: Boolean,
-    default: true
-  },
-  certified: {
-    type: Boolean,
-    default: false
-  },
   createdAt: {
     type: Date,
     default: Date.now

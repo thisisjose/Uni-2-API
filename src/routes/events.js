@@ -12,25 +12,25 @@ const {
   markAttendance
 } = require('../controllers/eventsController');
 
-const { authenticate, optionalAuthenticate, authorizeOrganizer } = require('../middleware/auth');
+const { authenticate, optionalAuthenticate, authorizeOrganizer, requireOrganizerOrAdmin } = require('../middleware/auth');
 
 // Públicas con auth opcional
 router.get('/', optionalAuthenticate, getAllEvents);
 
-// Mis eventos (organizer)
-router.get('/mine/list', authenticate, authorizeOrganizer, getMyEvents);
+// Mis eventos (organizer o admin)
+router.get('/mine/list', authenticate, requireOrganizerOrAdmin, getMyEvents);
 
-// Crear/editar/eliminar - Solo organizadores propietarios
-router.post('/', authenticate, authorizeOrganizer, createEvent);
-router.put('/:id', authenticate, authorizeOrganizer, updateEvent);
-router.delete('/:id', authenticate, authorizeOrganizer, deleteEvent);
+// Crear/editar/eliminar - Solo organizadores y admin
+router.post('/', authenticate, requireOrganizerOrAdmin, createEvent);
+router.put('/:id', authenticate, requireOrganizerOrAdmin, updateEvent);
+router.delete('/:id', authenticate, requireOrganizerOrAdmin, deleteEvent);
 
 // Módulo operativo - Cualquier usuario autenticado (admins no pueden unirse)
 router.post('/:id/join', authenticate, joinEvent);
 router.post('/:id/leave', authenticate, leaveEvent);
 
-// Marcar asistencia (organizer propietario)
-router.patch('/:id/participants/:participantId/attendance', authenticate, authorizeOrganizer, markAttendance);
+// Marcar asistencia (organizer o admin propietario)
+router.patch('/:id/participants/:participantId/attendance', authenticate, requireOrganizerOrAdmin, markAttendance);
 
 // Detalle (debe ir al final para no colisionar con rutas más específicas)
 router.get('/:id', optionalAuthenticate, getEventById);
