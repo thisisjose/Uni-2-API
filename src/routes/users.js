@@ -10,6 +10,6 @@ router.get('/', authenticate, authorizeAdmin, getAllUsers);
 router.get('/:id', authenticate, getUserById);
 
 // Ruta para actualizar el rol de un usuario (solo admin)
-router.put('/:id/role', authenticate, authorizeAdmin, updateRole);
+router.patch('/:id/role', authenticate, authorizeAdmin, updateRole);
 
 module.exports = router;
